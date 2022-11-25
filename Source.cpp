@@ -24,13 +24,11 @@ void Init(double*& A, double*& B, double*& C, int& S) {
 	cout << "Size:" << Size << endl;
 	MPI_Bcast(&Size, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-	if (ProcRank == 0) {
-		A = new double[Size * Size];
-		B = new double[Size * Size];
-		C = new double[Size * Size];
-		CreateMatrix(A, Size);
-		CreateMatrix(B, Size);
-	}
+	A = new double[Size * Size];
+	B = new double[Size * Size];
+	C = new double[Size * Size];
+	CreateMatrix(A, Size);
+	CreateMatrix(B, Size);
 }
 
 void Transpose(double*& B, int dim) {
@@ -55,9 +53,7 @@ void MatrixMul(double*& A, double*& B, double*& C, int Size) {
 	double* bufB = new double[dim * ProcPartSize];
 	double* bufC = new double[dim * ProcPartSize];
 	int ProcPart = dim / ProcNum, part = ProcPart * dim;
-	if (ProcRank == 0) {
-		Transpose(B, Size);
-	}
+	Transpose(B, Size);
 	MPI_Scatter(A, part, MPI_DOUBLE, bufA, part, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	MPI_Scatter(B, part, MPI_DOUBLE, bufB, part, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	srand(time(0));
